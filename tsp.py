@@ -2,15 +2,19 @@ import pygame
 from pygame.locals import *
 import random
 import itertools
-from genetic_algorithm import mutate, order_crossover, generate_random_population, calculate_fitness, sort_population, default_problems
+from genetic_algorithm import *
 from draw_functions import draw_paths, draw_plot, draw_cities
 import sys
 import numpy as np
 import pygame
 from benchmark_att48 import *
 
+'''
+População Gerada Randomicamente: Aumentando a população de 100 para 500 a geração com mesmo sub ótimo foi 3 vezes menor
+População Gerada com NN: Com a criação da primeira população com o método nearest neighbour o valor sub ótimo foi atingido na segunda geração
+'''
 
-# Define constant values
+# Constantes
 # pygame
 WIDTH, HEIGHT = 800, 400
 NODE_RADIUS = 10
@@ -19,26 +23,25 @@ PLOT_X_OFFSET = 450
 
 # GA
 N_CITIES = 15
-POPULATION_SIZE = 100
+POPULATION_SIZE = 100 # Population_size: 100 Routes -> 1 Route: sequence of n_cities
 N_GENERATIONS = None
 MUTATION_PROBABILITY = 0.5
 
-# Define colors
+# Cores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 
-# Initialize problem
-# Using Random cities generation
+# Initializando o  problema
+# Geração randomica de cidades
 # cities_locations = [(random.randint(NODE_RADIUS + PLOT_X_OFFSET, WIDTH - NODE_RADIUS), random.randint(NODE_RADIUS, HEIGHT - NODE_RADIUS))
 #                     for _ in range(N_CITIES)]
 
 
-# # Using Deault Problems: 10, 12 or 15
-WIDTH, HEIGHT = 800, 400
-cities_locations = default_problems[15]
+# Geração Default: 10, 12 or 15
+cities_locations = DEFAULT_PROBLEMS[10]
 
 
 # Using att48 benchmark
@@ -56,7 +59,7 @@ cities_locations = default_problems[15]
 # ----- Using att48 benchmark
 
 
-# Initialize Pygame
+# Initializando Pygame
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("TSP Solver using Pygame")
@@ -64,11 +67,16 @@ clock = pygame.time.Clock()
 generation_counter = itertools.count(start=1)  # Start the counter at 1
 
 
-# Create Initial Population
-# TODO:- use some heuristic like Nearest Neighbour our Convex Hull to initialize
+# Criando população inicial
+# TODO:- use heuristic Convex Hull to initialize
 population = generate_random_population(cities_locations, POPULATION_SIZE)
+
+# population_indexs = generate_nearest_neighbour_population(cities_locations, POPULATION_SIZE)
+# population = indices_to_coordinates(population_indexs, cities_locations)
+
 best_fitness_values = []
 best_solutions = []
+best_individual = []
 
 
 # Main game loop
@@ -106,7 +114,8 @@ while running:
 
     print(f"Generation {generation}: Best fitness = {round(best_fitness, 2)}")
 
-    new_population = [population[0]]  # Keep the best individual: ELITISM
+    # new_population = [population[0]]  # Mantem o melhor indivíduo para a pŕoxima geração: ELITISMO
+    new_population = [] # Sem elitismo
 
     while len(new_population) < POPULATION_SIZE:
 
@@ -118,8 +127,8 @@ while running:
         probability = 1 / np.array(population_fitness)
         parent1, parent2 = random.choices(population, weights=probability, k=2)
 
-        # child1 = order_crossover(parent1, parent2)
-        child1 = order_crossover(parent1, parent1)
+        child1 = order_crossover(parent1, parent2)
+        # child1 = order_crossover(parent1, parent1)
 
         child1 = mutate(child1, MUTATION_PROBABILITY)
 
@@ -127,12 +136,18 @@ while running:
 
     population = new_population
 
+
+    best_individual = best_solution
+    if new_population[0] == best_individual:
+        print('Acho que chegeui na melhor solução')
+
+
     pygame.display.flip()
     clock.tick(FPS)
 
 
 # TODO: save the best individual in a file if it is better than the one saved.
 
-# exit software
+# Saindo do software
 pygame.quit()
 sys.exit()

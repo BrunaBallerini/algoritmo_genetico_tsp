@@ -1,44 +1,87 @@
-
-
 import random
 import math
 import copy 
 from typing import List, Tuple
 
-default_problems = {
+DEFAULT_PROBLEMS = {
 5: [(733, 251), (706, 87), (546, 97), (562, 49), (576, 253)],
 10:[(470, 169), (602, 202), (754, 239), (476, 233), (468, 301), (522, 29), (597, 171), (487, 325), (746, 232), (558, 136)],
 12:[(728, 67), (560, 160), (602, 312), (712, 148), (535, 340), (720, 354), (568, 300), (629, 260), (539, 46), (634, 343), (491, 135), (768, 161)],
 15:[(512, 317), (741, 72), (552, 50), (772, 346), (637, 12), (589, 131), (732, 165), (605, 15), (730, 38), (576, 216), (589, 381), (711, 387), (563, 228), (494, 22), (787, 288)]
 }
 
+
 def generate_random_population(cities_location: List[Tuple[float, float]], population_size: int) -> List[List[Tuple[float, float]]]:
     """
-    Generate a random population of routes for a given set of cities.
-
-    Parameters:
-    - cities_location (List[Tuple[float, float]]): A list of tuples representing the locations of cities,
-      where each tuple contains the latitude and longitude.
-    - population_size (int): The size of the population, i.e., the number of routes to generate.
+    Gera uma população aleatória de rotas para uma lista de cidades
+    
+    Parametros:
+    - cities_location (List[Tuple[float, float]]): Lista de tuplas com a localização das cidades
+        com latitude e longitude
+    - population_size (int): Tamanho da população, ou seja, o número de rotas a serem geradas.
 
     Returns:
-    List[List[Tuple[float, float]]]: A list of routes, where each route is represented as a list of city locations.
+    List[List[Tuple[float, float]]]: Lista de rotas onde cada uma elemento representa uma lista de localização de cidades.
+    
     """
-    return [random.sample(cities_location, len(cities_location)) for _ in range(population_size)]
+    population = []
+    for _ in range(population_size):
+        shuffled = cities_location.copy()
+        random.shuffle(shuffled)
+        population.append(shuffled)
+    return population
 
 
 def calculate_distance(point1: Tuple[float, float], point2: Tuple[float, float]) -> float:
     """
-    Calculate the Euclidean distance between two points.
+    Calcula a distância Euclidiana de entre dois pontos.
 
     Parameters:
-    - point1 (Tuple[float, float]): The coordinates of the first point.
-    - point2 (Tuple[float, float]): The coordinates of the second point.
+    - point1 (Tuple[float, float]): Coordenadas do primeiro ponto.
+    - point2 (Tuple[float, float]): Coordenadas do segundo ponto.
 
     Returns:
-    float: The Euclidean distance between the two points.
+    float: Distância Euclidiana entre dois pontos.
     """
     return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+
+
+def generate_nearest_neighbour_population(cities_location: List[Tuple[float, float]], population_size: int) -> List[List[Tuple[float, float]]]:
+    """
+    Gera as rotas com vizinho mais pŕoximos começando por uma cidade randômica.
+
+    Parameters:
+    - cities_location: List[Tuple[float, float]]: Lista da posição das cidades.
+    - population_size: int: Tamanho da população a ser gerado.
+
+    Returns:
+    population_indices: List[List[int]]: Várias listas de soluções NNP com o tamanho da população.
+    """
+    population_indices = [] # Vetor de preenchimento da minha população
+
+    for _ in range(population_size):
+        cities_list_size = len(cities_location) 
+        unvisited = set(range(cities_list_size)) # Set com as posições do vetor inicial para verificação de quais foram visitadas
+        current = random.choice(list(unvisited)) # Primeira cidade é randômica
+        tour = [current] # Rota com a primeira cidade atual
+        unvisited.remove(current) # Remove para não passar pela mesma cidade
+
+        while unvisited: # Loop enquanto tiver cidade que não foi visitada
+            # min() itera sobre o set unvisited e para cada valor dentro dele city, compara dentro do cities_location qual o 
+            # menor valor e trás o índice dentro do set
+            next_city = min(unvisited, key=lambda city: calculate_distance(cities_location[current], cities_location[city]))
+            tour.append(next_city) # Acrescenta a nova cidade a rota
+            unvisited.remove(next_city) # Remove a cidade
+            current = next_city # Passa para o próximo passo da rota
+
+        population_indices.append(tour) # Acreescenta a rota dentro de polulação até completar o tamanho escolhido para ela no argumento
+
+    return population_indices
+
+
+def indices_to_coordinates(population_indices: List[List[int]], cities_location: List[Tuple[float, float]]) -> List[List[Tuple[float, float]]]:
+    """Converte uma população de índices para uma população de coordenadas"""
+    return [[cities_location[idx] for idx in individual] for individual in population_indices]
 
 
 def calculate_fitness(path: List[Tuple[float, float]]) -> float:
@@ -207,7 +250,7 @@ if __name__ == '__main__':
         best_fitness_values.append(best_fitness)
         best_solutions.append(best_solution)    
 
-        print(f"Generation {generation}: Best fitness = {best_fitness}")
+        # print(f"Generation {generation}: Best fitness = {best_fitness}")
 
         new_population = [population[0]]  # Keep the best individual: ELITISM
         
@@ -225,7 +268,7 @@ if __name__ == '__main__':
             new_population.append(child1)
             
     
-        print('generation: ', generation)
+        # print('generation: ', generation)
         population = new_population
     
 
