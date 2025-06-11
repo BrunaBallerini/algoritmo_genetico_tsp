@@ -43,7 +43,7 @@ def calculate_distance(point1: Tuple[float, float], point2: Tuple[float, float])
     Returns:
     float: Distância Euclidiana entre dois pontos.
     """
-    return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+    return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2) # Pode ser utilizado a matriz de distância 
 
 
 def generate_nearest_neighbour_population(cities_location: List[Tuple[float, float]], population_size: int) -> List[List[Tuple[float, float]]]:
@@ -132,35 +132,9 @@ def order_crossover(parent1: List[Tuple[float, float]], parent2: List[Tuple[floa
 
     return child
 
-### demonstration: crossover test code
-# Example usage:
-# parent1 = [(1, 1), (2, 2), (3, 3), (4,4), (5,5), (6, 6)]
-# parent2 = [(6, 6), (5, 5), (4, 4), (3, 3),  (2, 2), (1, 1)]
-
-# # parent1 = [1, 2, 3, 4, 5, 6]
-# # parent2 = [6, 5, 4, 3, 2, 1]
-
-
-# child = order_crossover(parent1, parent2)
-# print("Parent 1:", [0, 1, 2, 3, 4, 5, 6, 7, 8])
-# print("Parent 1:", parent1)
-# print("Parent 2:", parent2)
-# print("Child   :", child)
-
-
-# # Example usage:
-# population = generate_random_population(5, 10)
-
-# print(calculate_fitness(population[0]))
-
-
-# population = [(random.randint(0, 100), random.randint(0, 100))
-#           for _ in range(3)]
-
-
 
 # TODO: implement a mutation_intensity and invert pieces of code instead of just swamping two. 
-def mutate(solution:  List[Tuple[float, float]], mutation_probability: float) ->  List[Tuple[float, float]]:
+def mutate(solution: List[Tuple[float, float]], mutation_probability: float) ->  List[Tuple[float, float]]:
     """
     Mutate a solution by inverting a segment of the sequence with a given mutation probability.
 
@@ -187,15 +161,6 @@ def mutate(solution:  List[Tuple[float, float]], mutation_probability: float) ->
         mutated_solution[index], mutated_solution[index + 1] = solution[index + 1], solution[index]   
         
     return mutated_solution
-
-### Demonstration: mutation test code    
-# # Example usage:
-# original_solution = [(1, 1), (2, 2), (3, 3), (4, 4)]
-# mutation_probability = 1
-
-# mutated_solution = mutate(original_solution, mutation_probability)
-# print("Original Solution:", original_solution)
-# print("Mutated Solution:", mutated_solution)
 
 
 def sort_population(population: List[List[Tuple[float, float]]], fitness: List[float]) -> Tuple[List[List[Tuple[float, float]]], List[float]]:

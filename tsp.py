@@ -1,12 +1,12 @@
-import pygame
-from pygame.locals import *
+import pygame # type: ignore
+from pygame.locals import * # type: ignore
 import random
 import itertools
 from genetic_algorithm import *
 from draw_functions import draw_paths, draw_plot, draw_cities
 import sys
-import numpy as np
-import pygame
+import numpy as np # type: ignore
+import pygame # type: ignore
 from benchmark_att48 import *
 
 '''
@@ -36,12 +36,12 @@ BLUE = (0, 0, 255)
 
 # Initializando o  problema
 # Geração randomica de cidades
-# cities_locations = [(random.randint(NODE_RADIUS + PLOT_X_OFFSET, WIDTH - NODE_RADIUS), random.randint(NODE_RADIUS, HEIGHT - NODE_RADIUS))
-#                     for _ in range(N_CITIES)]
+cities_locations = [(random.randint(NODE_RADIUS + PLOT_X_OFFSET, WIDTH - NODE_RADIUS), random.randint(NODE_RADIUS, HEIGHT - NODE_RADIUS))
+                    for _ in range(N_CITIES)]
 
 
 # Geração Default: 10, 12 or 15
-cities_locations = DEFAULT_PROBLEMS[10]
+# cities_locations = DEFAULT_PROBLEMS[10]
 
 
 # Using att48 benchmark
@@ -123,6 +123,7 @@ while running:
         # simple selection based on first 10 best solutions
         # parent1, parent2 = random.choices(population[:10], k=2)
 
+        # TODO: implementar o método de seleção por torneio
         # solution based on fitness probability
         probability = 1 / np.array(population_fitness)
         parent1, parent2 = random.choices(population, weights=probability, k=2)
