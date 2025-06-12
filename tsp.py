@@ -76,7 +76,9 @@ population = generate_random_population(cities_locations, POPULATION_SIZE)
 
 best_fitness_values = []
 best_solutions = []
-best_individual = []
+best_global_fitness = float('inf')
+best_global_solution = None
+best_individual = None
 
 
 # Main game loop
@@ -114,8 +116,8 @@ while running:
 
     print(f"Generation {generation}: Best fitness = {round(best_fitness, 2)}")
 
-    # new_population = [population[0]]  # Mantem o melhor indivíduo para a pŕoxima geração: ELITISMO
-    new_population = [] # Sem elitismo
+    new_population = [population[0]]  # Mantem o melhor indivíduo para a pŕoxima geração: ELITISMO
+    # new_population = [] # Sem elitismo
 
     while len(new_population) < POPULATION_SIZE:
 
@@ -137,18 +139,23 @@ while running:
 
     population = new_population
 
+# TODO: save the best individual.
 
-    best_individual = best_solution
-    if new_population[0] == best_individual:
-        print('Acho que chegeui na melhor solução')
+    if best_fitness < best_global_fitness:
+        best_global_fitness = best_fitness
+        best_global_solution = best_solution
+        best_individual = population[0]
+        print(f"New best solution found: {round(best_global_fitness, 2)}")
+    elif best_fitness == best_global_fitness:
+        # Pode adicionar um contador aqui para ver quantas gerações sem melhoria
+        pass
 
 
     pygame.display.flip()
     clock.tick(FPS)
 
-
-# TODO: save the best individual in a file if it is better than the one saved.
-
 # Saindo do software
 pygame.quit()
+print(f"Best solution: {round(best_global_fitness, 2)}")
+print(f"Best population: {best_individual}")
 sys.exit()

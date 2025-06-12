@@ -103,6 +103,7 @@ def calculate_fitness(path: List[Tuple[float, float]]) -> float:
     return distance
 
 
+# TODO: Retornas dois indivíduos filhos
 def order_crossover(parent1: List[Tuple[float, float]], parent2: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
     """
     Perform order crossover (OX) between two parent sequences to create a child sequence.
